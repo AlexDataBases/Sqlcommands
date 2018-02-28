@@ -1,0 +1,455 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+using System.Configuration;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Diagnostics;
+
+namespace WindowsFormsApp2
+{
+
+    public partial class BD_teste : Form
+    {
+        SqlConnection conect = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\alexandre vieira\Desktop\WindowsFormsApp2\WindowsFormsApp2\Database1.mdf;Integrated Security=True");
+        SqlCommand go;
+
+        string nomeaquivo;
+        string item = string.Empty;
+        string temcoisadentro;
+        string nomearquivo2;
+
+
+        public BD_teste()
+        {
+            InitializeComponent();
+            SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+            textBox3.ReadOnly = true;
+            textBox4.ReadOnly = true;
+            textBox5.ReadOnly = true;
+            textBox6.ReadOnly = true;
+            textBox2.ReadOnly = true;
+            txtmotivonovo.ReadOnly = true;
+            
+           
+
+        }
+
+        private void BD_teste_load(object sender, EventArgs e)
+        {
+
+
+
+
+
+        }
+
+        private void dados_principaisBindingNavigatorSaveItem_Click(object sender, EventArgs e)
+        {
+            this.Validate();
+            this.dados_principaisBindingSource.EndEdit();
+            this.tableAdapterManager.UpdateAll(this.database1DataSet);
+
+        }
+
+        private void BD_teste_Load(object sender, EventArgs e)
+        {
+            // TODO: esta linha de código carrega dados na tabela 'database1DataSet.Dados_principais'. Você pode movê-la ou removê-la conforme necessário.
+            this.dados_principaisTableAdapter.Fill(this.database1DataSet.Dados_principais);
+
+        }
+
+        private void dados_principaisDataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+        private void Csharp_MySQL_Datagridview_Search_Load(object sender, EventArgs e)
+        {
+            searchData("");
+        }
+
+
+        private void denuncia_IDComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+
+        }
+        
+
+        public Image byteArrayToImage(byte[] bytesArr)
+        {
+            MemoryStream memstr = new MemoryStream(bytesArr);
+            Image img = Image.FromStream(memstr);
+            return img;
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            string valor = textBox1.Text;
+            conect.Open();
+            searchData(valor);
+            SqlDataReader Sqlreader = go.ExecuteReader();
+
+            while (Sqlreader.Read())
+            {
+                textBox3.Text = Sqlreader.GetSqlValue(1).ToString();
+                textBox5.Text = Sqlreader.GetSqlValue(3).ToString();
+                textBox4.Text = Sqlreader.GetSqlValue(4).ToString();
+                textBox6.Text = Sqlreader.GetSqlValue(5).ToString();
+                textBox2.Text = Sqlreader.GetSqlValue(12).ToString();
+                txtmotivonovo.Text = Sqlreader.GetSqlValue(8).ToString();
+                Txtdatanovinha.Text = Sqlreader.GetSqlValue(11).ToString();
+                txtstatus.Text = Sqlreader.GetSqlValue(13).ToString();
+                byte[] arquivo;
+                if (Sqlreader[9] is System.DBNull)
+                {
+                    arquivo = null;
+                    nomeaquivo = null;
+                }
+                else
+                { 
+                        
+                                            
+                        arquivo = (byte[])(Sqlreader[9]);
+                    
+                        nomeaquivo = (string)(Sqlreader[10]);
+                    
+                }
+                   if (arquivo == null)
+                {
+                    
+                    
+                }
+                   else
+                {
+                    using (Stream file = File.OpenWrite(nomeaquivo))
+                    {
+                        file.Write(arquivo, 0, arquivo.Length);
+                        
+                    }
+
+
+                }
+                byte[] arquivo2;
+                  if (Sqlreader[6] is System.DBNull)
+                    {
+                    arquivo2 = null;
+                    nomearquivo2 = null;
+                    }
+                  else
+                {
+                    arquivo2 = (byte[])(Sqlreader[6]);
+                    nomearquivo2 = (string)(Sqlreader[7]);
+                }
+                  if (arquivo2 == null)
+                {
+
+
+                }
+                  else
+                {
+                    using (Stream file2 = File.OpenWrite(nomearquivo2))
+                    {
+                        file2.Write(arquivo2, 0, arquivo2.Length);
+                    }
+                }
+                
+                // Aqui era pra imagem...
+                //byte[] imagem;
+                //if (Sqlreader[6] == null)
+                //{
+                //    imagem = null;
+                //}
+                //else
+                //{
+                //    imagem = (byte[])(Sqlreader[6]);
+                //}
+                //if (imagem == null)
+                //{
+                //    pictureBox1.Image = null;
+                //}
+               // else
+                //{
+                //    MemoryStream memstr = new MemoryStream(imagem);
+                //    Image img = Image.FromStream(memstr);
+                //    pictureBox1.Image = img;
+                //}
+
+            }
+            conect.Close();
+
+
+
+        }
+
+
+
+        public void searchData(string valorDoCodigo)
+        {
+            
+          
+            
+            string qeryDeentrada = "SELECT * FROM dbo.[Dados principais] WHERE [Denuncia ID] like  (@ValorDoCodigo)";
+            SqlParameter codigo = new SqlParameter("@ValorDoCodigo", SqlDbType.VarChar);
+            go = new SqlCommand(qeryDeentrada, conect);
+            
+            codigo.Value = textBox1.Text;
+            go.Parameters.Add(codigo);
+            
+
+        }
+
+
+
+        private void dataGridView1_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellContentClick_2(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox6_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox5_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged_1(object sender, EventArgs e)
+        {
+
+        }
+        private IDbConnection Abrirconexão()
+        {
+            return new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=E:\WindowsFormsApp2\WindowsFormsApp2\Database1.mdf;Integrated Security=True");
+
+        }
+       
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (nomeaquivo != null)
+            {
+                Process.Start(nomeaquivo);
+            }
+            else
+            {
+                MessageBox.Show("O Anexo não possui arquivos");
+            }
+        }
+
+        private void dataGridView1_CellContentClick_3(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+        private string escolherarquivo()
+            
+        {
+
+            var voltar = string.Empty;
+            try
+            {
+                if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    voltar = openFileDialog1.FileName;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro Detectado" + ex);
+            }
+            return voltar;
+        }
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (nomearquivo2 != null)
+            {
+                Process.Start(nomearquivo2);
+            }
+            else
+            {
+                MessageBox.Show(" A variavel Não possui arquivos anexos");
+            }
+
+
+        }
+
+        private void toolTip1_Popup(object sender, PopupEventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged_2(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtmotivo_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void txtmotivonovo_TextChanged(object sender, EventArgs e)
+        {
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            string valor = textBox1.Text;
+            conect.Open();
+            searchData(valor);
+            SqlDataReader Sqlreader = go.ExecuteReader();
+
+            while (Sqlreader.Read())
+            {
+                textBox3.Text = Sqlreader.GetSqlValue(1).ToString();
+                textBox5.Text = Sqlreader.GetSqlValue(3).ToString();
+                textBox4.Text = Sqlreader.GetSqlValue(4).ToString();
+                textBox6.Text = Sqlreader.GetSqlValue(5).ToString();
+                textBox2.Text = Sqlreader.GetSqlValue(12).ToString();
+                txtmotivonovo.Text = Sqlreader.GetSqlValue(8).ToString();
+                Txtdatanovinha.Text = Sqlreader.GetSqlValue(11).ToString();
+                txtstatus.Text = Sqlreader.GetSqlValue(13).ToString();
+                byte[] arquivo;
+                if (Sqlreader[9] is System.DBNull)
+                {
+                    arquivo = null;
+                    nomeaquivo = null;
+                }
+                else
+                {
+
+
+                    arquivo = (byte[])(Sqlreader[9]);
+
+                    nomeaquivo = (string)(Sqlreader[10]);
+
+                }
+                if (arquivo == null)
+                {
+
+
+                }
+                else
+                {
+                    using (Stream file = File.OpenWrite(nomeaquivo))
+                    {
+                        file.Write(arquivo, 0, arquivo.Length);
+
+                    }
+
+
+                }
+                byte[] arquivo2;
+                if (Sqlreader[6] is System.DBNull)
+                {
+                    arquivo2 = null;
+                    nomearquivo2 = null;
+                }
+                else
+                {
+                    arquivo2 = (byte[])(Sqlreader[6]);
+                    nomearquivo2 = (string)(Sqlreader[7]);
+                }
+                if (arquivo2 == null)
+                {
+
+
+                }
+                else
+                {
+                    using (Stream file2 = File.OpenWrite(nomearquivo2))
+                    {
+                        file2.Write(arquivo2, 0, arquivo2.Length);
+                    }
+                }
+
+                // Aqui era pra imagem...
+                //byte[] imagem;
+                //if (Sqlreader[6] == null)
+                //{
+                //    imagem = null;
+                //}
+                //else
+                //{
+                //    imagem = (byte[])(Sqlreader[6]);
+                //}
+                //if (imagem == null)
+                //{
+                //    pictureBox1.Image = null;
+                //}
+                // else
+                //{
+                //    MemoryStream memstr = new MemoryStream(imagem);
+                //    Image img = Image.FromStream(memstr);
+                //    pictureBox1.Image = img;
+                //}
+
+            }
+            conect.Close();
+
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+
+            BD_teste.ActiveForm.Close();
+          
+            
+
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+    }
+}
